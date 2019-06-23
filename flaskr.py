@@ -17,6 +17,15 @@ app.config.from_object(__name__)
 def connect_db():
     return sqlite3.connect(app.config['DATABASE'])
 
+@app.before_request
+def before_request():
+    g.db = connect_db();
+
+@app.after_request
+def after_request(response):
+    g.db.close()
+    return response
+
 # アプリの生成
 # from_objectで指定したオブジェクト内の大文字の変数をすべて取得する
 # 環境変数から設定を引継ぐことも可能
