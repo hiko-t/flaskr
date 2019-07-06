@@ -4,6 +4,13 @@ from flaskr import flaskr
 import unittest
 import tempfile
 
+'''
+定数
+'''
+
+USERNAME = 'admin'
+PASSWORD = 'default'
+
 class FlaskrTestCase(unittest.TestCase):
 
     # テストの準備
@@ -40,20 +47,29 @@ class FlaskrTestCase(unittest.TestCase):
     # ログイン、ログアウトのテスト
     def test_login_logout(self):
         # 正常ログイン
-        rv = self.login('admin', 'default')
+        rv = self.login(USERNAME, PASSWORD)
         assert b'You were logged in' in rv.data
         # 正常ログアウト
         rv = self.logout()
         assert b'You were logged out' in rv.data
         # 異常ログイン　ユーザー名違い
-        rv = self.login('adminx', 'default')
+        rv = self.login('adminx', PASSWORD)
         assert b'Invalid username' in rv.data
         # 異常ログイン　パスワード違い
-        rv = self.login('admin', 'defaultx')
+        rv = self.login(USERNAME, 'defaultx')
         assert b'Invalid password' in rv.data
 
-
-
+    # メッセージ追加テスト
+    def test_messages(self):
+        sample_txt='<strong>HTML</strong> allowed here'
+        self.login(USERNAME, PASSWORD)
+        rv = self.app.post('/add', data=dict(
+            title='<Hello>',
+            text=sample_txt,
+        ), follow_redirects=True)
+        assert b'No entries here so far' not in rv.data
+        assert b'&lt;Hello&gt;' in rv.data
+        assert b'<strong>HTML</strong> allowed here' in rv.data
 
 # テスト実行
 if __name__ == '__main__':
