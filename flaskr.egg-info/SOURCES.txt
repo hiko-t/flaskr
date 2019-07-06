@@ -1,5 +1,6 @@
 MANIFEST.in
 README.md
+setup.cfg
 setup.py
 flaskr/schema.sql
 flaskr.egg-info/PKG-INFO
